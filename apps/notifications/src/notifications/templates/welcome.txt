@@ -1,0 +1,16 @@
+Welcome to CueActor
+
+Hi {{userName}},
+
+Welcome to ActorsCanRead — your platform for script reading, rehearsal, and performance preparation.
+
+Get started:
+- Upload a script and let our AI analyze it
+- Book a session with a professional reader
+- Rehearse with Hazel, your AI scene partner
+- Record your performances and track your progress
+
+We're excited to have you on board.
+
+Best regards,
+The ActorsCanRead Team

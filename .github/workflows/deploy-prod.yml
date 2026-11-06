@@ -1,0 +1,303 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Image tag to deploy (commit SHA from staging). Leave empty to build fresh from main."
+        required: false
+        default: ""
+      confirm:
+        description: "Type 'deploy-prod' to confirm production deployment"
+        required: true
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+jobs:
+  validate:
+    name: Validate Deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm deployment intent
+        if: github.event.inputs.confirm != 'deploy-prod'
+        run: |
+          echo "ERROR: You must type 'deploy-prod' in the confirm field to proceed."
+          exit 1
+
+  build:
+    name: Build and Push Images
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Skip build if deploying an existing tag from staging
+    if: github.event.inputs.image_tag == ''
+    outputs:
+      image_tag: ${{ steps.vars.outputs.sha_short }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set output variables
+        id: vars
+        run: |
+          echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ env.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Core
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/core/Dockerfile
+          target: production
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/acr-core:${{ steps.vars.outputs.sha_short }}
+            ${{ env.DOCKERHUB_USERNAME }}/acr-core:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Auth Service
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/auth_service/Dockerfile
+          target: production
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/acr-auth-service:${{ steps.vars.outputs.sha_short }}
+            ${{ env.DOCKERHUB_USERNAME }}/acr-auth-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push AI Service
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/ai_service/Dockerfile
+          target: production
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/acr-ai-service:${{ steps.vars.outputs.sha_short }}
+            ${{ env.DOCKERHUB_USERNAME }}/acr-ai-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Notifications
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/notifications/Dockerfile
+          target: production
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/acr-notifications:${{ steps.vars.outputs.sha_short }}
+            ${{ env.DOCKERHUB_USERNAME }}/acr-notifications:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push File Service
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/file_service/Dockerfile
+          target: production
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/acr-file-service:${{ steps.vars.outputs.sha_short }}
+            ${{ env.DOCKERHUB_USERNAME }}/acr-file-service:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Script Parser
+        uses: docker/build-push-action@v5
+        with:
+          context: apps/script_parser
+          file: apps/script_parser/Dockerfile
+          push: true
+          tags: |
+            ${{ env.DOCKERHUB_USERNAME }}/acr-script-parser:${{ steps.vars.outputs.sha_short }}
+            ${{ env.DOCKERHUB_USERNAME }}/acr-script-parser:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Post build summary
+        run: |
+          echo "## Production Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Image | Tag |" >> $GITHUB_STEP_SUMMARY
+          echo "|-------|-----|" >> $GITHUB_STEP_SUMMARY
+          echo "| acr-core | \`${{ steps.vars.outputs.sha_short }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| acr-auth-service | \`${{ steps.vars.outputs.sha_short }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| acr-ai-service | \`${{ steps.vars.outputs.sha_short }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| acr-notifications | \`${{ steps.vars.outputs.sha_short }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| acr-file-service | \`${{ steps.vars.outputs.sha_short }}\` |" >> $GITHUB_STEP_SUMMARY
+          echo "| acr-script-parser | \`${{ steps.vars.outputs.sha_short }}\` |" >> $GITHUB_STEP_SUMMARY
+
+  deploy:
+    name: Deploy to Production EC2
+    needs: [validate, build]
+    # Run even if build was skipped (when using existing image_tag)
+    if: always() && needs.validate.result == 'success' && (needs.build.result == 'success' || needs.build.result == 'skipped')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+
+    env:
+      EC2_HOST: ${{ secrets.EC2_HOST }}
+      EC2_USER: ${{ secrets.EC2_USER }}
+      EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+      SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      # Use the provided tag (from staging) or the freshly built tag
+      IMAGE_TAG: ${{ github.event.inputs.image_tag || needs.build.outputs.image_tag }}
+
+    steps:
+      - name: Validate image tag
+        run: |
+          if [ -z "${{ env.IMAGE_TAG }}" ]; then
+            echo "ERROR: No image tag available. Build may have failed or no tag was provided."
+            exit 1
+          fi
+          echo "Deploying image tag: ${{ env.IMAGE_TAG }}"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Notify Slack - Production Deployment Starting
+        if: env.SLACK_WEBHOOK != ''
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"[PRODUCTION] Deploying CueActor Backend...\n- Version: \`${{ env.IMAGE_TAG }}\`\n- Triggered by: ${{ github.actor }}\"}" \
+            ${{ env.SLACK_WEBHOOK }}
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ env.EC2_SSH_KEY }}
+
+      - name: Add EC2 to known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ env.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Copy docker-compose to EC2
+        run: |
+          sed "s/\${DOCKERHUB_USERNAME}/${{ env.DOCKERHUB_USERNAME }}/g; s/:latest/:${{ env.IMAGE_TAG }}/g" \
+            docker-compose.prod.dockerhub.yaml > docker-compose.deploy.yaml
+          scp docker-compose.deploy.yaml ${{ env.EC2_USER }}@${{ env.EC2_HOST }}:~/acr-backend/docker-compose.yaml
+
+      - name: Deploy with Rolling Restart
+        run: |
+          ssh ${{ env.EC2_USER }}@${{ env.EC2_HOST }} bash << 'DEPLOY_SCRIPT'
+            set -e
+            cd ~/acr-backend
+
+            if [ ! -f .env ]; then
+              echo "ERROR: .env file not found!"
+              exit 1
+            fi
+
+            # Verify critical env vars
+            if ! grep -q "^DB_USERNAME=" .env || grep -q "^DB_USERNAME=$" .env; then
+              echo "ERROR: DB_USERNAME is not set in .env file!"
+              exit 1
+            fi
+
+            echo "${{ env.DOCKERHUB_TOKEN }}" | docker login -u "${{ env.DOCKERHUB_USERNAME }}" --password-stdin
+
+            echo "Pulling new images..."
+            docker-compose pull
+
+            SERVICES="rabbitmq core auth_service ai_service notifications file_service script_parser"
+
+            for SERVICE in $SERVICES; do
+              echo "Restarting $SERVICE..."
+              docker-compose up -d --no-deps $SERVICE
+              sleep 10
+
+              if ! docker-compose ps | grep -E "$SERVICE.*Up"; then
+                echo "ERROR: $SERVICE failed to start!"
+                docker-compose logs --tail=50 $SERVICE
+                exit 1
+              fi
+              echo "$SERVICE is running"
+            done
+
+            echo "All services restarted successfully"
+          DEPLOY_SCRIPT
+
+      - name: Health Check
+        timeout-minutes: 5
+        run: |
+          ssh ${{ env.EC2_USER }}@${{ env.EC2_HOST }} bash << 'HEALTH_SCRIPT'
+            set -e
+            cd ~/acr-backend
+
+            echo "Running health checks..."
+            MAX_ATTEMPTS=12
+            ATTEMPT=1
+
+            while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+              echo "Health check attempt $ATTEMPT/$MAX_ATTEMPTS..."
+
+              CORE_HEALTHY=false
+              AUTH_HEALTHY=false
+
+              if curl -sf http://localhost:3000/health > /dev/null 2>&1; then
+                CORE_HEALTHY=true
+                echo "Core service healthy"
+              fi
+
+              if curl -sf http://localhost:3001/health > /dev/null 2>&1; then
+                AUTH_HEALTHY=true
+                echo "Auth service healthy"
+              fi
+
+              if [ "$CORE_HEALTHY" = true ] && [ "$AUTH_HEALTHY" = true ]; then
+                echo "All critical services are healthy!"
+                docker-compose ps
+                exit 0
+              fi
+
+              sleep 5
+              ATTEMPT=$((ATTEMPT + 1))
+            done
+
+            echo "Health check failed after $MAX_ATTEMPTS attempts"
+            docker-compose ps
+            docker-compose logs --tail=30
+            exit 1
+          HEALTH_SCRIPT
+
+      - name: Notify Slack - Success
+        if: success() && env.SLACK_WEBHOOK != ''
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"[PRODUCTION] CueActor Backend deployed successfully!\n- Version: \`${{ env.IMAGE_TAG }}\`\n- Triggered by: ${{ github.actor }}\"}" \
+            ${{ env.SLACK_WEBHOOK }}
+
+      - name: Notify Slack - Failure
+        if: failure() && env.SLACK_WEBHOOK != ''
+        run: |
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"[PRODUCTION] CueActor Backend deployment FAILED!\n- Version: \`${{ env.IMAGE_TAG }}\`\n- Check: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\"}" \
+            ${{ env.SLACK_WEBHOOK }}
+
+      - name: Cleanup old images
+        if: success()
+        run: |
+          ssh ${{ env.EC2_USER }}@${{ env.EC2_HOST }} 'docker image prune -f'

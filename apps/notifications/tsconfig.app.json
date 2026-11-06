@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "../../dist/apps/notifications",
+    "baseUrl": "./",
+    "declaration": false,
+    "paths": {
+      "@app/common": ["../../libs/common/src"],
+      "@app/common/*": ["../../libs/common/src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "test", "**/*spec.ts"]
+}

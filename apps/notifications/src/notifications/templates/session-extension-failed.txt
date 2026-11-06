@@ -1,0 +1,17 @@
+Extension Payment Failed
+
+Hi {{userName}},
+
+Unfortunately, the payment for your session extension could not be processed. Your session was not extended.
+
+What happened:
+- Requested extension: {{extensionDurationMinutes}} minutes
+- Amount: ${{amountDollars}} {{currency}}
+- Session end time: {{previousSessionEndUtc}} UTC (unchanged)
+
+You can try requesting another extension if the session is still in progress. Make sure your payment method is up to date.
+
+If you believe this is an error, please contact our support team.
+
+Best regards,
+The ActorsCanRead Team

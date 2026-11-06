@@ -1,0 +1,16 @@
+Account Banned
+
+Hi {{userName}},
+
+Your ActorsCanRead account has been banned and you will no longer be able to sign in or access the platform.
+
+{{#if reason}}
+Reason: {{reason}}
+{{/if}}
+
+Banned on: {{formatDate bannedAt}}
+
+If you believe this was a mistake, please contact our support team to appeal this decision.
+
+Best regards,
+The ActorsCanRead Team

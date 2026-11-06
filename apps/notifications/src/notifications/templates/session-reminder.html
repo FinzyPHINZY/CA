@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Session Starting Soon</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    "
+  >
+    <div style="background-color: #f4f4f4; padding: 20px; border-radius: 5px">
+      <h1 style="color: #2c3e50">Session Starting Soon</h1>
+      <p>Hi {{userName}},</p>
+      <p>
+        Your reading session starts in <strong>{{minutesUntil}} minutes</strong>.
+      </p>
+      <div
+        style="
+          background-color: #d1ecf1;
+          padding: 15px;
+          border-radius: 5px;
+          margin: 20px 0;
+          border-left: 4px solid #17a2b8;
+        "
+      >
+        <p style="margin: 0"><strong>Session Details:</strong></p>
+        <ul style="margin: 10px 0 0 0; padding-left: 20px">
+          <li><strong>Start time:</strong> {{sessionStartUtc}} UTC</li>
+          <li><strong>Duration:</strong> {{sessionDurationMinutes}} minutes</li>
+          <li><strong>Your role:</strong> {{role}}</li>
+        </ul>
+      </div>
+      <p>
+        Make sure you're ready to join. You can enter the session up to 30 minutes
+        before the scheduled start time.
+      </p>
+      <p>Best regards,<br />The ActorsCanRead Team</p>
+    </div>
+  </body>
+</html>

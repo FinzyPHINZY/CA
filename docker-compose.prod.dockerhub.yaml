@@ -1,0 +1,265 @@
+services:
+  core:
+    image: ${DOCKERHUB_USERNAME}/acr-core:latest
+    container_name: acr-core
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - CORE_PORT=3000
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - REDIS_URL=redis://redis:6379
+    networks:
+      - acr-network
+    depends_on:
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/api/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  auth_service:
+    image: ${DOCKERHUB_USERNAME}/acr-auth-service:latest
+    container_name: acr-auth-service
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - AUTH_PORT=3001
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - NOTIFICATIONS_QUEUE=notifications.queue
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+    networks:
+      - acr-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3001/api/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ai_service:
+    image: ${DOCKERHUB_USERNAME}/acr-ai-service:latest
+    container_name: acr-ai-service
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./keys:/usr/src/app/keys:ro
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - AI_SERVICE_PORT=3002
+      - SMART_TURN_URL=${SMART_TURN_URL:-http://script_parser:3005}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - REDIS_URL=redis://redis:6379
+    networks:
+      - acr-network
+    depends_on:
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3002/api/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  notifications:
+    image: ${DOCKERHUB_USERNAME}/acr-notifications:latest
+    container_name: acr-notifications
+    restart: unless-stopped
+    ports:
+      - "3003:3003"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - NOTIFICATIONS_SERVICE_PORT=3003
+      - NOTIFICATIONS_TCP_PORT=4004
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - NOTIFICATIONS_QUEUE=notifications.queue
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+    networks:
+      - acr-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3003/api/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  file_service:
+    image: ${DOCKERHUB_USERNAME}/acr-file-service:latest
+    container_name: acr-file-service
+    restart: unless-stopped
+    ports:
+      - "3004:3004"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=production
+      - FILE_SERVICE_PORT=3004
+      - AUTH_SERVICE_HOST=auth_service
+      - AUTH_SERVICE_TCP_PORT=4001
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+    networks:
+      - acr-network
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3004/api/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  script_parser:
+    image: ${DOCKERHUB_USERNAME}/acr-script-parser:latest
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - SCRIPT_PARSER_QUEUE=script_parser.queue
+      - SCRIPT_PARSER_RESULTS_QUEUE=${AI_SERVICE_QUEUE:-ai_service.queue}
+    networks:
+      - acr-network
+    deploy:
+      replicas: 3
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import httpx; httpx.get('http://localhost:3005/health').raise_for_status()"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  redis:
+    image: redis:7-alpine
+    container_name: acr-redis
+    restart: unless-stopped
+    networks:
+      - acr-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: acr-rabbitmq
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - acr-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+networks:
+  acr-network:
+    driver: bridge

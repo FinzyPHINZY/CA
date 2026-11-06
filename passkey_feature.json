@@ -1,0 +1,126 @@
+{
+  "title": "Add Passkey (WebAuthn) Authentication to Existing NestJS Auth Flow",
+  "summary": "Extend the existing authentication module to support passwordless login and registration using passkeys (WebAuthn standard) alongside existing email/password authentication.",
+  "context": {
+    "framework": "NestJS",
+    "orm": "TypeORM",
+    "database": "PostgreSQL",
+    "auth_type": "JWT-based",
+    "current_state": "Has working user registration, login, and session or JWT auth.",
+    "new_feature_goal": "Enable users to register and log in with passkeys as an alternative to password auth, while maintaining compatibility with the existing system."
+  },
+  "dependencies": {
+    "install": [
+      "@simplewebauthn/server",
+      "@simplewebauthn/typescript-types",
+      "@types/node"
+    ]
+  },
+  "environment_variables": {
+    "RP_ID": "yourdomain.com",
+    "ORIGIN": "https://yourdomain.com",
+    "CHALLENGE_TTL_SECONDS": "120"
+  },
+  "database_changes": [
+    {
+      "entity": "UserPasskey",
+      "table": "user_passkeys",
+      "description": "Stores registered WebAuthn credentials tied to users.",
+      "fields": {
+        "id": "uuid primary key",
+        "userId": "uuid (foreign key to users.id)",
+        "credentialId": "varchar unique (base64url string)",
+        "publicKey": "text",
+        "signCount": "bigint default 0",
+        "aaguid": "varchar(64) nullable",
+        "transports": "text[] nullable",
+        "revoked": "boolean default false",
+        "createdAt": "timestamp default now()"
+      }
+    }
+  ],
+  "new_module": {
+    "name": "webauthn",
+    "folder": "src/authentication/webauthn",
+    "files": {
+      "controller": "webauthn.controller.ts",
+      "service": "webauthn.service.ts",
+      "dto": "dto/",
+      "entity": "entities/user-passkey.entity.ts"
+    }
+  },
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/auth/webauthn/register/options",
+      "description": "Generates WebAuthn registration (credential creation) options for the logged-in user.",
+      "requiresAuth": true
+    },
+    {
+      "method": "POST",
+      "path": "/auth/webauthn/register/verify",
+      "description": "Verifies the credential response from the client and stores the new public key credential.",
+      "requiresAuth": true
+    },
+    {
+      "method": "GET",
+      "path": "/auth/webauthn/authenticate/options",
+      "description": "Generates WebAuthn authentication (assertion) options for known credentials.",
+      "requiresAuth": false
+    },
+    {
+      "method": "POST",
+      "path": "/auth/webauthn/authenticate/verify",
+      "description": "Verifies a passkey-based login attempt and issues a JWT session token.",
+      "requiresAuth": false
+    }
+  ],
+  "core_logic": {
+    "registration_flow": [
+      "1. Generate challenge using random bytes.",
+      "2. Store challenge temporarily in Redis or in-memory keyed by user id.",
+      "3. Return creation options built with @simplewebauthn/server.generateRegistrationOptions().",
+      "4. On verify, call verifyRegistrationResponse() with stored challenge and expected RP_ID/Origin.",
+      "5. If verified, extract publicKey, credentialId, signCount, store in credentials table linked to user."
+    ],
+    "authentication_flow": [
+      "1. Lookup user’s credentials by email or user id.",
+      "2. Generate challenge with generateAuthenticationOptions().",
+      "3. Store challenge keyed by user id.",
+      "4. On verify, call verifyAuthenticationResponse().",
+      "5. If verified, update signCount and issue JWT or session cookie."
+    ]
+  },
+  "service_integration": {
+    "inject_into": "AuthModule",
+    "imports": ["TypeOrmModule.forFeature([Credential])"],
+    "providers": ["WebauthnService"],
+    "controllers": ["WebauthnController"]
+  },
+  "frontend_integration": {
+    "description": "Frontend should use WebAuthn APIs in browser to create and get credentials.",
+    "files": [
+      {
+        "path": "public/js/passkey.js",
+        "purpose": "Handles navigator.credentials.create() and navigator.credentials.get() calls with server endpoints."
+      }
+    ]
+  },
+  "example_code_snippets": {
+    "service": "Use @simplewebauthn/server to handle generateRegistrationOptions(), verifyRegistrationResponse(), generateAuthenticationOptions(), verifyAuthenticationResponse()",
+    "controller": "Expose 4 endpoints mapped to the methods in WebauthnService",
+    "entity": "Define Credential entity matching the database schema",
+    "integration": "After verification, login flow should issue JWT via existing AuthService"
+  },
+  "testing": {
+    "unit_tests": "Mock @simplewebauthn/server and verify endpoints logic",
+    "integration_tests": "Simulate full registration and authentication flows"
+  },
+  "readme_tasks": [
+    "Document new endpoints and frontend calls.",
+    "Explain how to test locally using HTTPS (localhost with mkcert).",
+    "Add migration for credentials table.",
+    "Describe optional Redis setup for challenge caching."
+  ],
+  "expected_output": "Working passkey authentication integrated with existing NestJS AuthModule, supporting both password and passkey login flows."
+}

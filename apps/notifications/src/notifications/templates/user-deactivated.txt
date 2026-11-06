@@ -1,0 +1,16 @@
+Account Deactivated
+
+Hi {{userName}},
+
+Your ActorsCanRead account has been deactivated. You will not be able to sign in until your account is reactivated.
+
+{{#if reason}}
+Reason: {{reason}}
+{{/if}}
+
+Deactivated on: {{formatDate deactivatedAt}}
+
+If you believe this was a mistake or would like to request reactivation, please contact our support team.
+
+Best regards,
+The ActorsCanRead Team

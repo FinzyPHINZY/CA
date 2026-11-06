@@ -1,0 +1,17 @@
+Payment Received
+
+Hi {{userName}},
+
+You've received a payment for a reading session.
+
+Payment Details:
+- Amount: ${{amountDollars}} {{currency}}
+- Platform fee: ${{platformFeeDollars}} {{currency}}
+- Your earnings: ${{earningsDollars}} {{currency}}
+- Session duration: {{sessionDurationMinutes}} minutes
+{{#if paymentType}}- Type: {{paymentType}}{{/if}}
+
+Earnings are transferred to your connected Stripe account according to your payout schedule.
+
+Best regards,
+The ActorsCanRead Team

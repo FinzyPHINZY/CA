@@ -1,0 +1,17 @@
+Session Cancelled
+
+Hi {{userName}},
+
+Your upcoming reading session has been cancelled by the {{cancelledByRole}}.
+
+Session Details:
+- Scheduled date: {{sessionDate}} UTC
+- Duration: {{sessionDurationMinutes}} minutes
+{{#if cancellationReason}}- Reason: {{cancellationReason}}{{/if}}
+
+{{#if refundMessage}}{{refundMessage}}{{/if}}
+
+You can book a new session at any time from the CueActor marketplace.
+
+Best regards,
+The ActorsCanRead Team

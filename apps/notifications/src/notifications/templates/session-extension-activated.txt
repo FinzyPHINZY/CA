@@ -1,0 +1,16 @@
+Session Extended
+
+Hi {{userName}},
+
+Your reading session has been successfully extended by {{extensionDurationMinutes}} minutes.
+
+Extension Details:
+- Duration added: {{extensionDurationMinutes}} minutes
+- New session end time: {{newSessionEndUtc}} UTC
+- Amount charged: ${{amountDollars}} {{currency}}
+- Extension #: {{extensionNumber}}
+
+This is a confirmation of a session extension that was requested and approved during your live session.
+
+Best regards,
+The ActorsCanRead Team

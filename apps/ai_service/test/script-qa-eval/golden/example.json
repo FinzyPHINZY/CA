@@ -1,0 +1,34 @@
+{
+  "scriptId": "REPLACE_WITH_REAL_SCRIPT_ID",
+  "scriptTitle": "Example Script",
+  "pairs": [
+    {
+      "question": "What is this script about?",
+      "expectedClass": "META",
+      "expectedAnswer": "A drama about...",
+      "expectedCitations": [],
+      "expectedRefusal": false
+    },
+    {
+      "question": "How many scenes are there?",
+      "expectedClass": "AGGREGATE",
+      "expectedAnswer": "The script has N scenes.",
+      "expectedCitations": [],
+      "expectedRefusal": false
+    },
+    {
+      "question": "When does Sarah first appear?",
+      "expectedClass": "LOOKUP",
+      "expectedAnswer": "Sarah first appears in scene 3",
+      "expectedCitations": [{ "sceneNumber": 3 }],
+      "expectedRefusal": false
+    },
+    {
+      "question": "What is the weather on Mars?",
+      "expectedClass": "OFF_TOPIC",
+      "expectedAnswer": null,
+      "expectedCitations": [],
+      "expectedRefusal": true
+    }
+  ]
+}

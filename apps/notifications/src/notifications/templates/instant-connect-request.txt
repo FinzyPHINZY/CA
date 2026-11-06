@@ -1,0 +1,14 @@
+Instant Connect Request
+
+Hi {{userName}},
+
+{{actorName}} wants to start a reading session with you right now.
+
+Session Details:
+- Duration: {{sessionDurationMinutes}} minutes
+- Pay: ${{amountDollars}} {{currency}}
+
+This request may expire soon. Open the CueActor app to accept or decline.
+
+Best regards,
+The ActorsCanRead Team

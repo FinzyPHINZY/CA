@@ -1,0 +1,10 @@
+# One-off migrations. Uses same DB_* env as app services (e.g. DB_HOST=postgres).
+FROM node:alpine
+WORKDIR /usr/src/app
+RUN npm install -g pnpm
+COPY package.json pnpm-lock.yaml ./
+COPY .npmrc ./
+RUN pnpm install --frozen-lockfile
+COPY scripts/ scripts/
+COPY migrations/ migrations/
+CMD ["node", "scripts/run-migrations.js"]

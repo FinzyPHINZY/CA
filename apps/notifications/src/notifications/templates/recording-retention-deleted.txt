@@ -1,0 +1,12 @@
+Recording Removed
+
+Hi there,
+
+A recording has been automatically removed after exceeding your {{plan}} plan's {{retentionDays}}-day retention period.
+
+Want to keep recordings longer? Upgrade your plan to extend your retention period and keep your recordings safe.
+
+This is an automated notification. Removed recordings cannot be recovered.
+
+Best regards,
+The ActorsCanRead Team

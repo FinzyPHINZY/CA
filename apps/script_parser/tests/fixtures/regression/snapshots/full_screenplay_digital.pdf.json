@@ -1,0 +1,55 @@
+{
+  "character_count": 9,
+  "character_names": [
+    "#2",
+    "#3",
+    "#4",
+    "#5",
+    "#6",
+    "#7",
+    "#8",
+    "#9",
+    "CLERK"
+  ],
+  "document_class": null,
+  "element_counts": {
+    "action": 1886,
+    "character": 754,
+    "dialogue": 3086,
+    "parenthetical": 396,
+    "transition": 22
+  },
+  "format": "pdf_pymupdf_structural",
+  "low_confidence_flag": false,
+  "page_count": 153,
+  "parser_chain": [
+    "pdf_pymupdf_structural"
+  ],
+  "parser_path": "pdf_pymupdf_structural",
+  "parser_warnings": [],
+  "rejected": false,
+  "rejection_error": null,
+  "scene_count": 2,
+  "scenes": [
+    {
+      "element_count": 77,
+      "heading": "PROLOGUE",
+      "number": 1,
+      "page_end": 3,
+      "page_start": 1,
+      "script_scene_number": null
+    },
+    {
+      "element_count": 6067,
+      "heading": "EXT. LONG SHOT - N. Y. - COURT OF GENERAL SESSIONS - DAY",
+      "number": 2,
+      "page_end": 153,
+      "page_start": 3,
+      "script_scene_number": "1"
+    }
+  ],
+  "stage_play_detected": false,
+  "structure_confidence_score": 0.9,
+  "watermark_detected": false,
+  "watermark_texts": []
+}

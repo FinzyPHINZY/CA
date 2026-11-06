@@ -1,0 +1,104 @@
+{
+  "character_count": 3,
+  "character_names": [
+    "ELIA",
+    "KARLA",
+    "LUISA"
+  ],
+  "document_class": null,
+  "element_counts": {
+    "action": 199,
+    "character": 40,
+    "dialogue": 91,
+    "transition": 7
+  },
+  "format": "pdf_pymupdf_structural",
+  "low_confidence_flag": false,
+  "page_count": 9,
+  "parser_chain": [
+    "pdf_pymupdf_structural"
+  ],
+  "parser_path": "pdf_pymupdf_structural",
+  "parser_warnings": [],
+  "rejected": false,
+  "rejection_error": null,
+  "scene_count": 9,
+  "scenes": [
+    {
+      "element_count": 4,
+      "heading": "PROLOGUE",
+      "number": 1,
+      "page_end": 1,
+      "page_start": 1,
+      "script_scene_number": null
+    },
+    {
+      "element_count": 4,
+      "heading": "INT. LUISA'S BEDROOM - NIGHT",
+      "number": 2,
+      "page_end": 1,
+      "page_start": 1,
+      "script_scene_number": "13"
+    },
+    {
+      "element_count": 16,
+      "heading": "INT. KITCHEN - DAY",
+      "number": 3,
+      "page_end": 1,
+      "page_start": 1,
+      "script_scene_number": "14"
+    },
+    {
+      "element_count": 24,
+      "heading": "INT. ENTRANCE - DAY (CONTINUOUS)",
+      "number": 4,
+      "page_end": 2,
+      "page_start": 1,
+      "script_scene_number": "15"
+    },
+    {
+      "element_count": 41,
+      "heading": "INT. LIVING ROOM - DAY (CONTINUOUS)",
+      "number": 5,
+      "page_end": 3,
+      "page_start": 2,
+      "script_scene_number": "16"
+    },
+    {
+      "element_count": 29,
+      "heading": "INT. HALLWAY - DAY",
+      "number": 6,
+      "page_end": 4,
+      "page_start": 3,
+      "script_scene_number": "17"
+    },
+    {
+      "element_count": 88,
+      "heading": "INT. KITCHEN - DAY",
+      "number": 7,
+      "page_end": 6,
+      "page_start": 4,
+      "script_scene_number": "27"
+    },
+    {
+      "element_count": 29,
+      "heading": "INT. TRINITY ICE RINK - DAY",
+      "number": 8,
+      "page_end": 7,
+      "page_start": 6,
+      "script_scene_number": "28"
+    },
+    {
+      "element_count": 102,
+      "heading": "INT. LUISA'S BEDROOM - DAY",
+      "number": 9,
+      "page_end": 9,
+      "page_start": 7,
+      "script_scene_number": "77"
+    }
+  ],
+  "stage_play_detected": false,
+  "structure_confidence_score": 1.0,
+  "watermark_detected": false,
+  "watermark_texts": []
+}

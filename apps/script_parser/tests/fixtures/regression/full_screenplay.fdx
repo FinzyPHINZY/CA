@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<FinalDraft DocumentType="Script" Template="No" Version="3">
+  <Content>
+    <Paragraph Type="Scene Heading">
+      <SceneProperties Length="1/8" Page="1" Title=""/>
+      <Text>INT. COFFEE SHOP - DAY</Text>
+    </Paragraph>
+    <Paragraph Type="Action">
+      <Text>A modest coffee shop. Morning light. ALICE sits across from BOB.</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>ALICE</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>You said you'd be on time.</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>BOB</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>Traffic was brutal.</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>ALICE</Text>
+    </Paragraph>
+    <Paragraph Type="Parenthetical">
+      <Text>(skeptical)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>Traffic. Right.</Text>
+    </Paragraph>
+    <Paragraph Type="Action">
+      <Text>Bob shrugs and orders an espresso. Alice studies him.</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>ALICE (CONT'D)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>We need to talk about the deal.</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>BOB</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>Now? Here?</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>ALICE</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>Yes. Now.</Text>
+    </Paragraph>
+    <Paragraph Type="Scene Heading">
+      <SceneProperties Length="1/8" Page="2" Title=""/>
+      <Text>EXT. STREET - LATER</Text>
+    </Paragraph>
+    <Paragraph Type="Action">
+      <Text>Alice and Bob walk briskly down a busy sidewalk.</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>BOB</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>Fine. What's on your mind?</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>ALICE</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>The numbers don't add up.</Text>
+    </Paragraph>
+    <Paragraph Type="Scene Heading">
+      <SceneProperties Length="1/8" Page="3" Title=""/>
+      <Text>INT. OFFICE - NIGHT</Text>
+    </Paragraph>
+    <Paragraph Type="Action">
+      <Text>A cramped office. CHARLIE reviews documents at a desk.</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>CHARLIE</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>This is a mess.</Text>
+    </Paragraph>
+    <Paragraph Type="Character">
+      <Text>CHARLIE (CONT'D)</Text>
+    </Paragraph>
+    <Paragraph Type="Dialogue">
+      <Text>We have a problem.</Text>
+    </Paragraph>
+  </Content>
+</FinalDraft>

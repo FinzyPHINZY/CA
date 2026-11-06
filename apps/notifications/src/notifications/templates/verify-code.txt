@@ -1,0 +1,15 @@
+Verify Your Email
+
+Hi {{userName}},
+
+Thank you for signing up! Please use the verification code below to verify your email address.
+
+Your verification code is: {{code}}
+
+This code will expire in {{expiryTime}}.
+
+If you didn't request this verification code, please ignore this email.
+
+Best regards,
+The ActorsCanRead Team
+

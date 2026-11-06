@@ -1,0 +1,14 @@
+Recording Expiring Soon
+
+Hi there,
+
+Your recording will be automatically removed in {{daysRemaining}} days due to your {{plan}} plan's {{retentionDays}}-day retention policy.
+
+What you can do:
+- Download your recording before it expires
+- Upgrade your plan for longer retention
+
+If you no longer need this recording, no action is required. It will be automatically removed after the retention period.
+
+Best regards,
+The ActorsCanRead Team

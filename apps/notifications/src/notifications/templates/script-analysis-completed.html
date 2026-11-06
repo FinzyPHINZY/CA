@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Script Analysis Complete</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    "
+  >
+    <div style="background-color: #f4f4f4; padding: 20px; border-radius: 5px">
+      <h1 style="color: #2c3e50">Script Analysis Complete</h1>
+      <p>Hi {{userName}},</p>
+      {{#if isSuccess}}
+      <p>
+        Your script <strong>{{scriptName}}</strong> has been analyzed successfully.
+      </p>
+      <div
+        style="
+          background-color: #d4edda;
+          padding: 15px;
+          border-radius: 5px;
+          margin: 20px 0;
+          border-left: 4px solid #28a745;
+        "
+      >
+        <p style="margin: 0"><strong>What's ready:</strong></p>
+        <ul style="margin: 10px 0 0 0; padding-left: 20px">
+          <li>Scene breakdowns and character analysis</li>
+          <li>Dialogue and action identification</li>
+          <li>Character relationships and emotional arcs</li>
+        </ul>
+      </div>
+      <p>
+        Head to your project dashboard to view the full analysis results.
+      </p>
+      {{else}}
+      <p>
+        Unfortunately, the analysis of your script <strong>{{scriptName}}</strong>
+        could not be completed.
+      </p>
+      <div
+        style="
+          background-color: #f8d7da;
+          padding: 15px;
+          border-radius: 5px;
+          margin: 20px 0;
+          border-left: 4px solid #dc3545;
+        "
+      >
+        <p style="margin: 0">
+          {{#if errorMessage}}{{errorMessage}}{{else}}An error occurred during analysis. Please try uploading and analyzing the script again.{{/if}}
+        </p>
+      </div>
+      {{/if}}
+      <p>Best regards,<br />The ActorsCanRead Team</p>
+    </div>
+  </body>
+</html>

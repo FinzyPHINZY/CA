@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Account Deactivated</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    "
+  >
+    <div style="background-color: #f4f4f4; padding: 20px; border-radius: 5px">
+      <h1 style="color: #e67e22">Account Deactivated</h1>
+      <p>Hi {{userName}},</p>
+      <p>
+        Your ActorsCanRead account has been deactivated. You will not be able to
+        sign in until your account is reactivated.
+      </p>
+      {{#if reason}}
+      <div
+        style="
+          background-color: #fef5e7;
+          padding: 15px;
+          border-radius: 5px;
+          margin: 20px 0;
+          border-left: 4px solid #e67e22;
+        "
+      >
+        <p style="margin: 0"><strong>Reason:</strong> {{reason}}</p>
+      </div>
+      {{/if}}
+      <p style="font-size: 14px; color: #7f8c8d">
+        Deactivated on: {{formatDate deactivatedAt}}
+      </p>
+      <p>
+        If you believe this was a mistake or would like to request reactivation,
+        please contact our support team.
+      </p>
+      <p>Best regards,<br />The ActorsCanRead Team</p>
+    </div>
+  </body>
+</html>

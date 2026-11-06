@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Extension Payment Failed</title>
+  </head>
+  <body
+    style="
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    "
+  >
+    <div style="background-color: #f4f4f4; padding: 20px; border-radius: 5px">
+      <h1 style="color: #2c3e50">Extension Payment Failed</h1>
+      <p>Hi {{userName}},</p>
+      <p>
+        Unfortunately, the payment for your session extension could not be
+        processed. Your session was <strong>not</strong> extended.
+      </p>
+      <div
+        style="
+          background-color: #f8d7da;
+          padding: 15px;
+          border-radius: 5px;
+          margin: 20px 0;
+          border-left: 4px solid #dc3545;
+        "
+      >
+        <p style="margin: 0">
+          <strong>What happened:</strong>
+        </p>
+        <ul style="margin: 10px 0 0 0; padding-left: 20px">
+          <li><strong>Requested extension:</strong> {{extensionDurationMinutes}} minutes</li>
+          <li><strong>Amount:</strong> ${{amountDollars}} {{currency}}</li>
+          <li><strong>Session end time:</strong> {{previousSessionEndUtc}} UTC (unchanged)</li>
+        </ul>
+      </div>
+      <p>
+        You can try requesting another extension if the session is still in
+        progress. Make sure your payment method is up to date.
+      </p>
+      <p style="font-size: 12px; color: #7f8c8d; margin-top: 30px">
+        If you believe this is an error, please contact our support team.
+      </p>
+      <p>Best regards,<br />The ActorsCanRead Team</p>
+    </div>
+  </body>
+</html>

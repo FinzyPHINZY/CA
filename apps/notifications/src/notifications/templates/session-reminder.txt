@@ -1,0 +1,15 @@
+Session Starting Soon
+
+Hi {{userName}},
+
+Your reading session starts in {{minutesUntil}} minutes.
+
+Session Details:
+- Start time: {{sessionStartUtc}} UTC
+- Duration: {{sessionDurationMinutes}} minutes
+- Your role: {{role}}
+
+Make sure you're ready to join. You can enter the session up to 30 minutes before the scheduled start time.
+
+Best regards,
+The ActorsCanRead Team

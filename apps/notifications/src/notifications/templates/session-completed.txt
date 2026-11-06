@@ -1,0 +1,14 @@
+Session Complete
+
+Hi {{userName}},
+
+Your reading session has been completed.
+
+Session Summary:
+- Completed at: {{completedAt}} UTC
+- Your role: {{role}}
+
+If cloud recording was enabled, your recording will be available shortly in your project dashboard.
+
+Best regards,
+The ActorsCanRead Team

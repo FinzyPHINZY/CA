@@ -1,0 +1,16 @@
+Your Recording is Ready
+
+Hi {{userName}},
+
+Your session recording has been processed and is ready to view.
+
+Recording Details:
+- Session date: {{sessionDate}} UTC
+{{#if durationSeconds}}- Duration: {{durationSeconds}} seconds{{/if}}
+
+You can view and download your recording from your project dashboard.
+
+Recordings are stored according to your plan's retention policy. Download recordings you'd like to keep permanently.
+
+Best regards,
+The ActorsCanRead Team

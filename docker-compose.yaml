@@ -1,0 +1,311 @@
+
+services:
+  core:
+    build:
+      context: .
+      dockerfile: apps/core/Dockerfile
+      target: development
+    command: sh -c "pnpm install && pnpm run start:dev core"
+    ports:
+      - "${CORE_PORT:-3000}:${CORE_PORT:-3000}"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - DATABASE_URL=postgresql://${DB_USERNAME:-postgres}:${DB_PASSWORD:-password}@postgres:${DB_PORT:-5432}/${DB_NAME:-acr_db}
+      - DB_HOST=postgres
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_NAME=${DB_NAME:-acr_db}
+      - DB_SSL=${DB_SSL:-false}
+      - DB_SYNCHRONIZE=${DB_SYNCHRONIZE:-true}
+      - DB_LOGGING=${DB_LOGGING:-false}
+      - CORE_PORT=${CORE_PORT:-3000}
+      - RABBITMQ_URL=${RABBITMQ_URL:-amqp://rabbitmq:5672}
+      - NOTIFICATIONS_QUEUE=${NOTIFICATIONS_QUEUE:-notifications.queue}
+      - AI_SERVICE_QUEUE=${AI_SERVICE_QUEUE:-ai_service.queue}
+      - CORE_SERVICE_QUEUE=${CORE_SERVICE_QUEUE:-core_service.queue}
+      - AUTH_SERVICE_HOST=${AUTH_SERVICE_HOST:-auth_service}
+      - AUTH_SERVICE_TCP_PORT=${AUTH_SERVICE_TCP_PORT:-4001}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - REDIS_URL=redis://redis:6379
+      - OTEL_ENABLED=${OTEL_ENABLED:-false}
+      - OTEL_SERVICE_NAME=core
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  auth_service:
+    build:
+      context: .
+      dockerfile: apps/auth_service/Dockerfile
+      target: development
+    command: sh -c "pnpm install && pnpm run start:dev auth_service"
+    ports:
+      - "${AUTH_PORT:-3001}:${AUTH_PORT:-3001}"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+    environment:
+      - AUTH_PORT=${AUTH_PORT:-3001}
+      - RABBITMQ_URL=${RABBITMQ_URL:-amqp://rabbitmq:5672}
+      - NOTIFICATIONS_QUEUE=${NOTIFICATIONS_QUEUE:-notifications.queue}
+      - DATABASE_URL=postgresql://${DB_USERNAME:-postgres}:${DB_PASSWORD:-password}@postgres:${DB_PORT:-5432}/${DB_NAME:-acr_db}
+      - DB_HOST=postgres
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_NAME=${DB_NAME:-acr_db}
+      - DB_SSL=${DB_SSL:-false}
+      - DB_SYNCHRONIZE=${DB_SYNCHRONIZE:-true}
+      - DB_LOGGING=${DB_LOGGING:-false}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - APPLE_CLIENT_ID=${APPLE_CLIENT_ID}
+      - APPLE_TEAM_ID=${APPLE_TEAM_ID}
+      - APPLE_KEY_ID=${APPLE_KEY_ID}
+      - APPLE_PRIVATE_KEY=${APPLE_PRIVATE_KEY}
+      - AWS_REGION=${AWS_REGION}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  ai_service:
+    build:
+      context: .
+      dockerfile: apps/ai_service/Dockerfile
+      target: development
+    command: sh -c "pnpm install && pnpm run start:dev ai_service"
+    ports:
+      - "${AI_SERVICE_PORT:-3002}:${AI_SERVICE_PORT:-3002}"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - CI=${CI:-}
+      - AI_SERVICE_PORT=${AI_SERVICE_PORT:-3002}
+      - RABBITMQ_URL=${RABBITMQ_URL:-amqp://rabbitmq:5672}
+      - AI_SERVICE_QUEUE=${AI_SERVICE_QUEUE:-ai_service.queue}
+      - SMART_TURN_URL=${SMART_TURN_URL:-http://script_parser:3005}
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379}
+      - DATABASE_URL=postgresql://${DB_USERNAME:-postgres}:${DB_PASSWORD:-password}@postgres:${DB_PORT:-5432}/${DB_NAME:-acr_db}
+      - DB_HOST=postgres
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_NAME=${DB_NAME:-acr_db}
+      - DB_SSL=${DB_SSL:-false}
+      - DB_SYNCHRONIZE=${DB_SYNCHRONIZE:-true}
+      - DB_LOGGING=${DB_LOGGING:-false}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - OTEL_ENABLED=${OTEL_ENABLED:-false}
+      - OTEL_SERVICE_NAME=ai_service
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  notifications:
+    build:
+      context: .
+      dockerfile: apps/notifications/Dockerfile
+      target: development
+    command: sh -c "pnpm install && pnpm run start:dev notifications"
+    ports:
+      - "${NOTIFICATIONS_SERVICE_PORT:-3003}:${NOTIFICATIONS_SERVICE_PORT:-3003}"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - .env
+    environment:
+      - NOTIFICATIONS_SERVICE_PORT=${NOTIFICATIONS_SERVICE_PORT:-3003}
+      - NOTIFICATIONS_TCP_PORT=${NOTIFICATIONS_TCP_PORT:-4004}
+      - RABBITMQ_URL=${RABBITMQ_URL:-amqp://rabbitmq:5672}
+      - NOTIFICATIONS_QUEUE=${NOTIFICATIONS_QUEUE:-notifications.queue}
+      - DATABASE_URL=postgresql://${DB_USERNAME:-postgres}:${DB_PASSWORD:-password}@postgres:${DB_PORT:-5432}/${DB_NAME:-acr_db}
+      - DB_HOST=postgres
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_NAME=${DB_NAME:-acr_db}
+      - DB_SSL=${DB_SSL:-false}
+      - DB_SYNCHRONIZE=${DB_SYNCHRONIZE:-true}
+      - DB_LOGGING=${DB_LOGGING:-false}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_SECURE=${EMAIL_SECURE}
+      - EMAIL_USER=${EMAIL_USER}
+      - EMAIL_PASSWORD=${EMAIL_PASSWORD}
+      - EMAIL_FROM_NAME=${EMAIL_FROM_NAME}
+      - EMAIL_FROM_ADDRESS=${EMAIL_FROM_ADDRESS}
+      - EMAIL_ENABLED=${EMAIL_ENABLED}
+      - AWS_REGION=${AWS_REGION}
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  file_service:
+    build:
+      context: .
+      dockerfile: apps/file_service/Dockerfile
+      target: development
+    command: sh -c "pnpm install && pnpm run start:dev file_service"
+    ports:
+      - "${FILE_SERVICE_PORT:-3004}:${FILE_SERVICE_PORT:-3004}"
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - FILE_SERVICE_PORT=${FILE_SERVICE_PORT:-3004}
+      - AUTH_SERVICE_HOST=${AUTH_SERVICE_HOST:-auth_service}
+      - AUTH_SERVICE_TCP_PORT=${AUTH_SERVICE_TCP_PORT:-4001}
+      - DB_HOST=postgres
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_NAME=${DB_NAME:-acr_db}
+      - DB_SYNCHRONIZE=${DB_SYNCHRONIZE:-true}
+      - DB_LOGGING=${DB_LOGGING:-false}
+      - DB_SSL=${DB_SSL:-false}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  script_parser:
+    build:
+      context: apps/script_parser
+      dockerfile: Dockerfile
+    volumes:
+      - ./apps/script_parser:/app
+    env_file:
+      - .env
+    environment:
+      - RABBITMQ_URL=amqp://rabbitmq:5672
+      - SCRIPT_PARSER_QUEUE=${SCRIPT_PARSER_QUEUE:-script_parser.queue}
+      - SCRIPT_PARSER_RESULTS_QUEUE=${AI_SERVICE_QUEUE:-ai_service.queue}
+      - REDIS_URL=redis://redis:6379
+      - OTEL_ENABLED=${OTEL_ENABLED:-false}
+      - OTEL_SERVICE_NAME=script_parser
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318
+    command: uvicorn main:app --host 0.0.0.0 --port 3005 --reload
+    deploy:
+      replicas: 3
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: redis-server --appendonly yes
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - 5672:5672
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  postgres:
+    image: postgres:15-alpine
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-acr_db}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-killbill}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.57
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "4318:4318" # OTLP HTTP receiver
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.migrate
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=${DB_PORT:-5432}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-password}
+      - DB_NAME=${DB_NAME:-acr_db}
+      - DB_SSL=false
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+volumes:
+  postgres_data:
+  redis_data:

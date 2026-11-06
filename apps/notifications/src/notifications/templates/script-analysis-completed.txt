@@ -1,0 +1,19 @@
+Script Analysis Complete
+
+Hi {{userName}},
+
+{{#if isSuccess}}Your script "{{scriptName}}" has been analyzed successfully.
+
+What's ready:
+- Scene breakdowns and character analysis
+- Dialogue and action identification
+- Character relationships and emotional arcs
+
+Head to your project dashboard to view the full analysis results.
+{{else}}Unfortunately, the analysis of your script "{{scriptName}}" could not be completed.
+
+{{#if errorMessage}}{{errorMessage}}{{else}}An error occurred during analysis. Please try uploading and analyzing the script again.{{/if}}
+{{/if}}
+
+Best regards,
+The ActorsCanRead Team

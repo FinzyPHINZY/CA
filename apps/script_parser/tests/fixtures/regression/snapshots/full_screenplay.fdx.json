@@ -1,0 +1,56 @@
+{
+  "character_count": 3,
+  "character_names": [
+    "ALICE",
+    "BOB",
+    "CHARLIE"
+  ],
+  "document_class": null,
+  "element_counts": {
+    "action": 4,
+    "character": 10,
+    "dialogue": 10,
+    "parenthetical": 1
+  },
+  "format": "fdx",
+  "low_confidence_flag": false,
+  "page_count": 1,
+  "parser_chain": [
+    "fdx"
+  ],
+  "parser_path": "fdx",
+  "parser_warnings": [],
+  "rejected": false,
+  "rejection_error": null,
+  "scene_count": 3,
+  "scenes": [
+    {
+      "element_count": 15,
+      "heading": "INT. COFFEE SHOP - DAY",
+      "number": 1,
+      "page_end": null,
+      "page_start": null,
+      "script_scene_number": null
+    },
+    {
+      "element_count": 5,
+      "heading": "EXT. STREET - LATER",
+      "number": 2,
+      "page_end": null,
+      "page_start": null,
+      "script_scene_number": null
+    },
+    {
+      "element_count": 5,
+      "heading": "INT. OFFICE - NIGHT",
+      "number": 3,
+      "page_end": null,
+      "page_start": null,
+      "script_scene_number": null
+    }
+  ],
+  "stage_play_detected": false,
+  "structure_confidence_score": 1.0,
+  "watermark_detected": false,
+  "watermark_texts": []
+}

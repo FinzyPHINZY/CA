@@ -1,0 +1,9 @@
+Subscription Updated
+
+Hi {{userName}},
+
+<!-- TODO: Finalize subscription email content once subscription system is complete -->
+Your subscription has been updated.
+
+Best regards,
+The ActorsCanRead Team
